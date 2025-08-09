@@ -1,0 +1,47 @@
+---
+services:
+
+  master-slave-app-laravel:
+    build: .
+    container_name: master-slave-app-laravel
+    image: master-slave-app-laravel:1.0.0
+    volumes:
+      - ./app/storage/:/var/www/html/storage
+      - ./php/fpm.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - mariadb-master-slave-network
+    environment:
+      - SESSION_DRIVER=file
+      - DB_CONNECTION=mariadb
+      - DB_NAME=simple_app
+
+      - DB_WRITE_HOST=mariadb-master
+      - DB_WRITE_PORT=3306
+      - DB_WRITE_USER=root
+      - DB_WRITE_PASSWORD=secret
+
+      - DB_READ_HOST=mariadb-slave3
+      - DB_READ_PORT=3306
+      - DB_READ_USER=readonlyuser
+      - DB_READ_PASSWORD=readonlypass
+    mem_limit: 256m
+    cpus: 1
+
+  master-slave-app-laravel-nginx:
+    container_name: master-slave-app-laravel-nginx
+    image: nginx:latest
+    ports:
+      - "8003:80"
+    volumes:
+      - ./app/public:/var/www/html/public
+      - ./app/storage/app/public:/var/www/html/public/storage
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      -  mariadb-master-slave-network
+    mem_limit: 256m
+    cpus: 1
+
+networks:
+  mariadb-master-slave-network:
+    driver: bridge
+    external: true

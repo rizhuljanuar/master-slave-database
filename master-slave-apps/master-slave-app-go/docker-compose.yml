@@ -1,0 +1,44 @@
+---
+services:
+  master-slave-app-go:
+    build: .
+    container_name: master-slave-app-go
+    image: master-slave-app-go:1.0.0
+    ports:
+      - "8001:8001"
+    mem_limit: 256m
+    cpus: 1
+    environment:
+      - APP_PORT=8001
+
+      - DB_NAME=simple_app
+
+      - DB_WRITE_HOST=mariadb-master
+      - DB_WRITE_USER=root
+      - DB_WRITE_PASSWORD=secret
+      - DB_WRITE_PORT=3306
+      - DB_WRITE_CONNECTION_LIMIT=10
+      - DB_WRITE_TIMEOUT=10000
+      - DB_WRITE_MAX_OPEN_CONNS=25
+      - DB_WRITE_MAX_IDLE_CONNS=25
+      - DB_WRITE_CONN_MAX_LIFETIME=5m
+      - DB_WRITE_CONN_MAX_IDLE_TIME=10m
+
+      - DB_READ_HOST=mariadb-slave1
+      - DB_READ_USER=readonlyuser
+      - DB_READ_PASSWORD=readonlypass
+      - DB_READ_PORT=3306
+      - DB_READ_CONNECTION_LIMIT=10
+      - DB_READ_TIMEOUT=10000
+      - DB_READ_MAX_OPEN_CONNS=50
+      - DB_READ_MAX_IDLE_CONNS=50
+      - DB_READ_CONN_MAX_LIFETIME=5m
+      - DB_READ_CONN_MAX_IDLE_TIME=10m
+
+    networks:
+     - mariadb-master-slave-network
+
+networks:
+  mariadb-master-slave-network:
+    driver: bridge
+    external: true

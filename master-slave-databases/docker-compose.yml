@@ -1,0 +1,63 @@
+services:
+  mariadb-master:
+    image: mariadb:lts-noble
+    container_name: mariadb-master
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - ./conf/master.cnf:/etc/mysql/conf.d/master.cnf
+      - ./data/db-master-data:/var/lib/mysql
+    ports:
+      - "3386:3306"
+    networks:
+      - mariadb-master-slave-network
+
+  mariadb-slave1:
+    image: mariadb:lts-noble
+    container_name: mariadb-slave1
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - ./conf/slave1.cnf:/etc/mysql/conf.d/slave.cnf
+      - ./data/db-slave1-data:/var/lib/mysql
+    ports:
+      - "3387:3306"
+    depends_on:
+      - mariadb-master
+    networks:
+      - mariadb-master-slave-network
+
+  mariadb-slave2:
+    image: mariadb:lts-noble
+    container_name: mariadb-slave2
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - ./conf/slave2.cnf:/etc/mysql/conf.d/slave.cnf
+      - ./data/db-slave2-data:/var/lib/mysql
+    ports:
+      - "3388:3306"
+    depends_on:
+      - mariadb-master
+    networks:
+      - mariadb-master-slave-network
+
+  mariadb-slave3:
+    image: mariadb:lts-noble
+    container_name: mariadb-slave3
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - ./conf/slave3.cnf:/etc/mysql/conf.d/slave.cnf
+      - ./data/db-slave3-data:/var/lib/mysql
+    ports:
+      - "3389:3306"
+    depends_on:
+      - mariadb-master
+    networks:
+      - mariadb-master-slave-network
+
+networks:
+  mariadb-master-slave-network:
+    name: mariadb-master-slave-network
+    driver: bridge

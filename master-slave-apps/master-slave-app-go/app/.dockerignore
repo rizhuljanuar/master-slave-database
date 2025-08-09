@@ -1,0 +1,10 @@
+vendors
+.DS_Store
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/vendor
+Thumbs.db
+go.sum
